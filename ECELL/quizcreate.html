@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+  <h2>Create a Quiz</h2>
+  <form id="quiz-form">
+    <label for="title">Quiz Title:</label>
+    <input type="text" id="title" name="title" required>
+    <br>
+    <h4>Questions:</h4>
+    <div id="questions-container">
+      <div class="question">
+        <label for="question-1">Question 1:</label>
+        <input type="text" id="question-1" name="questions[0][question]" required>
+        <br>
+        <label for="options-1">Options (comma-separated):</label>
+        <input type="text" id="options-1" name="questions[0][options]" required>
+        <br>
+        <label for="correct-answer-1">Correct Answer (index starting from 0):</label>
+        <input type="number" id="correct-answer-1" name="questions[0][correctAnswer]" required>
+      </div>
+    </div>
+    <br>
+    <button type="button" onclick="addQuestion()">Add Question</button>
+    <br>
+    <button type="submit">Create Quiz</button>
+  </form>
+
+  <script>
+    // Function to dynamically add a question fieldset to the quiz form
+    function addQuestion() {
+      const questionsContainer = document.getElementById('questions-container');
+      const questionCount = questionsContainer.children.length + 1;
+
+      const questionFieldset = document.createElement('div');
+      questionFieldset.classList.add('question');
+
+      questionFieldset.innerHTML = `
+        <label for="question-${questionCount}">Question ${questionCount}:</label>
+        <input type="text" id="question-${questionCount}" name="questions[${questionCount - 1}][question]" required>
+        <br>
+        <label for="options-${questionCount}">Options (comma-separated):</label>
+        <input type="text" id="options-${questionCount}" name="questions[${questionCount - 1}][options]" required>
+        <br>
+        <label for="correct-answer-${questionCount}">Correct Answer (index starting from 0):</label>
+        <input type="number" id="correct-answer-${questionCount}" name="questions[${questionCount - 1}][correctAnswer]" required>
+      `;
+
+      questionsContainer.appendChild(questionFieldset);
+    }
+  // Function to handle quiz creation form submission
+  document.getElementById('quiz-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const title = document.getElementById('quiz-form').elements.title.value;
+      const questions = Array.from(document.querySelectorAll('#quiz-form .question')).map(questionField => {
+        const question = questionField.querySelector('input[name^="questions"][name$="[question]"]').value;
+        const options = questionField.querySelector('input[name^="questions"][name$="[options]"]').value.split(',');
+        const correctAnswer = parseInt(questionField.querySelector('input[name^="questions"][name$="[correctAnswer]"]').value);
+        
+        return { question, options, correctAnswer };
+      });
+
+      fetch('/quizzes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ title, questions })
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error(error));
+    });
+    </script>
+</body>
+</html>

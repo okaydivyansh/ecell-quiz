@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz App</title>
+</head>
+<body>
+  <h1>Quiz App</h1>
+
+  <h2>User Registration</h2>
+  <form id="registration-form">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <button type="submit">Register</button>
+  </form>
+
+  <h2>User Login</h2>
+  <form id="login-form">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <button type="submit">Login</button>
+  </form>
+  <script>
+  // Function to handle user registration form submission
+  document.getElementById('registration-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const username = document.getElementById('registration-form').elements.username.value;
+    const password = document.getElementById('registration-form').elements.password.value;
+
+    fetch('/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, password })
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+  });
+
+    // Function to handle user login form submission
+    document.getElementById('login-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const username = document.getElementById('login-form').elements.username.value;
+      const password = document.getElementById('login-form').elements.password.value;
+
+      fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error(error));
+    });
+
+  
+  </script>
+</body>
+</html>
